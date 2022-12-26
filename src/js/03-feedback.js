@@ -22,6 +22,8 @@ function onSubmitForm(e) {
     elements: { email, message },
   } = e.currentTarget;
 
+  formData = {};
+
   if (email.value === '' || message.value === '') {
     alert('Please fill in all the fields!');
     return;
