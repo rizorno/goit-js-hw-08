@@ -1,52 +1,52 @@
-const { update } = require("lodash");
-import throttle from "lodash.throttle";
+const { update } = require('lodash');
+import throttle from 'lodash.throttle';
 
-const form = document.querySelector(".feedback-form");
+const form = document.querySelector('.feedback-form');
 const email = document.querySelector("[name='email']");
 const message = document.querySelector("[name='message']");
 
-form.addEventListener("input", throttle(onFormData, 500));
-form.addEventListener("submit", onSubmitForm);
+form.addEventListener('input', throttle(onFormData, 500));
+form.addEventListener('submit', onSubmitForm);
 
 const formData = {};
 
 function onFormData(e) {
   formData[e.target.name] = e.target.value;
-  localStorage.setItem("feedback-form-state", JSON.stringify(formData));
+  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
 }
 
 function onSubmitForm(e) {
-  console.log(JSON.parse(localStorage.getItem("feedback-form-state")));
+  console.log(JSON.parse(localStorage.getItem('feedback-form-state')));
   e.preventDefault();
 
   const {
     elements: { email, message },
   } = e.currentTarget;
 
-  if (email.value === "" || message.value === "") {
-    alert("Please fill in all the fields!");
+  if (email.value === '' || message.value === '') {
+    alert('Please fill in all the fields!');
     return;
   }
 
   e.currentTarget.reset();
-  localStorage.removeItem("feedback-form-state");
+  localStorage.removeItem('feedback-form-state');
 }
 
 (function dataFromLocalStorage() {
-  const data = JSON.parse(localStorage.getItem("feedback-form-state"));
+  const data = JSON.parse(localStorage.getItem('feedback-form-state'));
 
   if (data === null) {
-    email.value = "";
-    message.value = "";
+    email.value = '';
+    message.value = '';
     return;
   }
 
-  if (data.email === undefined) {
-    email.value = "";
+  if (data.email === undefined && data.message) {
+    email.value = '';
     message.value = data.message;
-  } else if (data.message === undefined) {
+  } else if (data.message === undefined && data.email) {
     email.value = data.email;
-    message.value = "";
+    message.value = '';
   } else {
     email.value = data.email;
     message.value = data.message;
