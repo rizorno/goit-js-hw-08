@@ -1,4 +1,3 @@
-const { update } = require('lodash');
 import throttle from 'lodash.throttle';
 
 const form = document.querySelector('.feedback-form');
@@ -17,7 +16,6 @@ function onFormData(e) {
 }
 
 function onSubmitForm(e) {
-  console.log(JSON.parse(localStorage.getItem('feedback-form-state')));
   e.preventDefault();
 
   const {
@@ -28,6 +26,8 @@ function onSubmitForm(e) {
     alert('Please fill in all the fields!');
     return;
   }
+
+  console.log(JSON.parse(localStorage.getItem('feedback-form-state')));
 
   e.currentTarget.reset();
   localStorage.removeItem('feedback-form-state');
