@@ -9,8 +9,7 @@ email.addEventListener('input', throttle(onFormData, 500));
 message.addEventListener('input', throttle(onFormData, 500));
 form.addEventListener('submit', onSubmitForm);
 
-let formData = {};
-// let formData = JSON.parse(localStorage.getItem('feedback-form-state'));
+let formData = JSON.parse(localStorage.getItem('feedback-form-state')) || {};
 
 function onFormData(e) {
   formData[e.target.name] = e.target.value;
@@ -24,7 +23,6 @@ function onSubmitForm(e) {
   const {
     elements: { email, message },
   } = e.currentTarget;
-  formData = {};
 
   if (email.value === '' || message.value === '') {
     alert('Please fill in all the fields!');
@@ -55,3 +53,5 @@ function dataFromLocalStorage() {
     message.value = data.message;
   }
 }
+
+dataFromLocalStorage();
