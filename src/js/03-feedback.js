@@ -1,59 +1,83 @@
 import throttle from 'lodash.throttle';
 
+// * ========== Варіант з імпортом ==========
+
+// import { loadFromLS, saveToLS } from './helpers.js';
+
+// * ========== Варіант без імпорту ==========
+
 const form = document.querySelector('.feedback-form');
-const email = document.querySelector("[name='email']");
-const message = document.querySelector("[name='message']");
 
-email.addEventListener('input', throttle(onFormData, 500));
-message.addEventListener('input', throttle(onFormData, 500));
-form.addEventListener('submit', onSubmitForm);
+// Функція збереження даних до Local Storage
 
-let formData = JSON.parse(localStorage.getItem('feedback-form-state')) || {};
+function saveToLS(key, value) {
+  const jsonFormat = JSON.stringify(value);
 
-function onFormData(e) {
-  formData[e.target.name] = e.target.value;
-  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+  localStorage.setItem(key, jsonFormat);
 }
 
-function onSubmitForm(e) {
+// Функція отримання даних від Local Storage
+
+function loadFromLS(key) {
+  const dataVelue = localStorage.getItem(key);
+
+  try {
+    const result = JSON.parse(dataVelue);
+    return result;
+  } catch {
+    return dataVelue;
+  }
+}
+
+// Виклик функції отримання значень для кожного з полів форми
+
+loadData();
+
+// Функція отримання значень для кожного з полів форми
+
+function loadData() {
+  const data = loadFromLS('feedback-form-state') || {};
+
+  for (let key of Object.keys(data)) {
+    form.elements[key].value = data[key];
+  }
+}
+
+// Прослуховувач 'input' до полів форми
+
+form.addEventListener('input', throttle(onFormData, 500));
+
+// Функція під час 'input' до полів форми
+
+function onFormData(e) {
+  const data = loadFromLS('feedback-form-state') || {};
+  const nameElem = e.target.name;
+
+  data[nameElem] = e.target.value;
+  saveToLS('feedback-form-state', data);
+}
+
+// Прослуховувач на 'submit'
+
+form.addEventListener('submit', onSubmitForme);
+
+// Функція під час 'submit'
+
+function onSubmitForme(e) {
   e.preventDefault();
 
-  const {
-    elements: { email, message },
-  } = e.currentTarget;
+  for (let key of Object.keys(e.target.elements)) {
+    if (Number.isNaN(Number(key))) {
+      const elem = e.target.elements[key];
 
-  formData = {};
-
-  if (email.value === '' || message.value === '') {
-    alert('Please fill in all the fields!');
-    return;
+      if (elem.value.trim() === '') {
+        alert('Please fill in all the fields!');
+        return;
+      }
+    }
   }
 
   console.log(JSON.parse(localStorage.getItem('feedback-form-state')));
-
-  e.currentTarget.reset();
   localStorage.removeItem('feedback-form-state');
+  e.target.reset();
 }
-
-function dataFromLocalStorage() {
-  const data = JSON.parse(localStorage.getItem('feedback-form-state'));
-
-  if (data === null) {
-    email.value = '';
-    message.value = '';
-    return;
-  }
-
-  if (data.email === undefined && data.message) {
-    email.value = '';
-    message.value = data.message;
-  } else if (data.message === undefined && data.email) {
-    email.value = data.email;
-    message.value = '';
-  } else {
-    email.value = data.email;
-    message.value = data.message;
-  }
-}
-
-dataFromLocalStorage();
